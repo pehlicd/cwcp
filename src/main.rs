@@ -24,28 +24,6 @@ mod clipboard {
     }
 }
 
-//TODO: test this on a linux
-#[cfg(target_os = "linux")]
-mod clipboard {
-    use std::fs::File;
-    use std::io::Write;
-    use std::path::Path;
-
-    pub fn copy_to_clipboard(text: &str) -> Result<(), String> {
-        let selection_paths = ["/dev/clipboard", "/proc/self/fd/1", "~/.clipboard"];
-
-        for path in &selection_paths {
-            if let Ok(mut file) = File::create(Path::new(path)) {
-                if file.write_all(text.as_bytes()).is_ok() {
-                    return Ok(());
-                }
-            }
-        }
-
-        Err("Unable to copy to clipboard".to_string())
-    }
-}
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let current_dir = env::current_dir()?;
     let path_str = current_dir.to_str().ok_or("Invalid path")?;
@@ -58,5 +36,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg(target_os = "macos")]
 extern crate cocoa;
-#[cfg(target_os = "macos")]
 extern crate objc;
